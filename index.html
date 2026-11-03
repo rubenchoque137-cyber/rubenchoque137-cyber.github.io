@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NEXO Admin</title>
+  <title>NEXO Store - Panel Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -13,59 +13,95 @@
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { background-color: #0b0c10; color: #e2e8f0; font-family: sans-serif; }
-    .glass { background: rgba(18, 21, 30, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #0b0c10; color: #e2e8f0; }
+    .glass { background: rgba(18, 21, 30, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0c10; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
   </style>
 </head>
-<body class="p-4 max-w-4xl mx-auto space-y-6">
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-gold selection:text-black">
 
-  <div id="toast" class="hidden fixed top-4 right-4 left-4 p-4 rounded-xl text-black font-bold text-center z-50 bg-brand-gold shadow-lg"></div>
+  <div id="toast" class="hidden fixed bottom-5 right-5 z-50 p-4 rounded-xl text-xs font-bold bg-brand-gold text-black shadow-lg"></div>
 
-  <header class="flex justify-between items-center glass p-4 rounded-2xl">
-    <h1 class="font-bold text-brand-gold text-lg">NEXO ADMIN</h1>
-    <a href="https://corporationnexo.github.io" target="_blank" class="text-xs bg-white/10 px-3 py-2 rounded-lg text-white">Ver Tienda</a>
+  <header class="sticky top-0 z-40 glass border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-brand-gold to-yellow-200 flex items-center justify-center text-black font-bold text-xl shadow-lg">
+          <span>N</span>
+        </div>
+        <div>
+          <span class="text-xl font-extrabold tracking-wider text-white block leading-none">NEXO</span>
+          <span class="text-xs text-brand-gold font-medium tracking-widest uppercase">Panel Admin</span>
+        </div>
+      </div>
+      <a href="https://corporationnexo.github.io" target="_blank" class="px-4 py-2 bg-white/5 text-slate-300 rounded-lg text-xs font-semibold hover:bg-white/10 border border-white/10 flex items-center gap-2">
+        <i class="fa-solid fa-store text-brand-gold"></i>
+        <span>Ver Tienda</span>
+      </a>
+    </div>
   </header>
 
-  <form id="product-form" onsubmit="saveProduct(event)" class="glass p-6 rounded-2xl space-y-4">
-    <h2 class="font-bold text-white text-base">Publicar Producto</h2>
-    <div>
-      <label class="text-xs text-slate-400">Título</label>
-      <input type="text" id="p-title" required class="w-full bg-black/50 border border-white/20 p-3 rounded-xl text-white text-sm">
-    </div>
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <label class="text-xs text-slate-400">Precio (Bs)</label>
-        <input type="number" step="0.5" id="p-price" required class="w-full bg-black/50 border border-white/20 p-3 rounded-xl text-white text-sm">
+  <main class="flex-grow py-8">
+    <div class="max-w-7xl mx-auto px-4 grid lg:grid-cols-3 gap-8">
+      
+      <!-- FORMULARIO -->
+      <div class="glass p-6 rounded-2xl space-y-4 h-fit">
+        <h3 class="text-lg font-bold text-white border-b border-white/10 pb-3" id="form-title">Publicar Producto</h3>
+        <form id="product-form" onsubmit="handleProductSubmit(event)" class="space-y-4">
+          <input type="hidden" id="prod-id">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Título</label>
+            <input type="text" id="prod-title" required class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-gold focus:outline-none">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Precio (Bs)</label>
+              <input type="number" step="0.5" id="prod-price" required class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-gold focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Categoría</label>
+              <select id="prod-category" class="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-gold focus:outline-none">
+                <option value="Ropa">Ropa</option>
+                <option value="Electrónica">Electrónica</option>
+                <option value="Accesorios">Accesorios</option>
+                <option value="Otros">Otros</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">URL de Imagen</label>
+            <input type="url" id="prod-img" required placeholder="https://..." class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-gold focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Descripción</label>
+            <textarea id="prod-desc" rows="3" required class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-gold focus:outline-none"></textarea>
+          </div>
+          <div class="flex gap-2">
+            <button type="submit" id="btn-save" class="w-full py-3 bg-brand-gold text-black font-bold rounded-lg hover:bg-yellow-400 transition-all text-xs uppercase tracking-wider">Guardar Producto</button>
+            <button type="button" id="btn-cancel" onclick="resetForm()" class="hidden px-4 py-3 bg-white/5 text-slate-300 rounded-lg text-xs">Cancelar</button>
+          </div>
+        </form>
       </div>
-      <div>
-        <label class="text-xs text-slate-400">Categoría</label>
-        <select id="p-cat" class="w-full bg-black/50 border border-white/20 p-3 rounded-xl text-white text-sm">
-          <option value="Ropa">Ropa</option>
-          <option value="Electrónica">Electrónica</option>
-          <option value="Accesorios">Accesorios</option>
-          <option value="Otros">Otros</option>
-        </select>
+
+      <!-- LISTA DE INVENTARIO -->
+      <div class="lg:col-span-2 glass p-6 rounded-2xl space-y-4">
+        <h3 class="text-lg font-bold text-white border-b border-white/10 pb-3">Inventario en la Nube</h3>
+        <div id="admin-products-list" class="space-y-3">Cargando inventario...</div>
       </div>
-    </div>
-    <div>
-      <label class="text-xs text-slate-400">URL Imagen</label>
-      <input type="url" id="p-img" required class="w-full bg-black/50 border border-white/20 p-3 rounded-xl text-white text-sm">
-    </div>
-    <div>
-      <label class="text-xs text-slate-400">Descripción</label>
-      <textarea id="p-desc" rows="2" required class="w-full bg-black/50 border border-white/20 p-3 rounded-xl text-white text-sm"></textarea>
-    </div>
-    <button type="submit" class="w-full py-3 bg-brand-gold text-black font-bold rounded-xl text-sm uppercase">Guardar en la Nube</button>
-  </form>
 
-  <div class="glass p-6 rounded-2xl space-y-4">
-    <h2 class="font-bold text-white text-base">Productos en la Nube</h2>
-    <div id="list" class="space-y-3">Cargando...</div>
-  </div>
+    </div>
+  </main>
 
+  <footer class="glass border-t border-white/10 py-6 text-center text-xs text-slate-500">
+    <p>© 2026 NEXO Store - Panel Administrativo</p>
+  </footer>
+
+  <!-- SCRIPT DE FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA1tz7MlQtm1VHMNVMZ8q9Io_LcJXSegSU",
@@ -78,66 +114,109 @@
     };
 
     const db = getFirestore(initializeApp(firebaseConfig));
+    let products = [];
 
-    window.showMsg = (txt) => {
+    window.showToast = function(msg) {
       const t = document.getElementById('toast');
-      t.innerText = txt;
+      t.innerText = msg;
       t.classList.remove('hidden');
       setTimeout(() => t.classList.add('hidden'), 3000);
     }
 
-    window.loadProducts = async function() {
-      const list = document.getElementById('list');
+    async function loadAdminProducts() {
+      const list = document.getElementById('admin-products-list');
       try {
         const snap = await getDocs(collection(db, "products"));
-        if(snap.empty) {
-          list.innerHTML = "<p class='text-xs text-slate-500'>No hay productos.</p>";
+        products = [];
+        snap.forEach(d => products.push({ id: d.id, ...d.data() }));
+
+        if(products.length === 0) {
+          list.innerHTML = "<p class='text-xs text-slate-500'>No hay productos registrados.</p>";
           return;
         }
-        let html = "";
-        snap.forEach(d => {
-          const p = d.data();
-          html += `<div class='flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/10'>
-            <div class='flex items-center gap-3'>
-              <img src='${p.img}' class='w-10 h-10 object-cover rounded-lg'>
-              <div><p class='text-sm font-bold text-white'>${p.title}</p><p class='text-xs text-brand-gold'>${p.price} Bs</p></div>
+
+        list.innerHTML = products.map(p => `
+          <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 gap-3">
+            <div class="flex items-center gap-3 overflow-hidden">
+              <img src="${p.img}" class="w-12 h-12 object-cover rounded-lg flex-shrink-0 bg-slate-900">
+              <div class="truncate">
+                <h4 class="text-sm font-bold text-white truncate">${p.title}</h4>
+                <p class="text-xs text-slate-400">${p.price} Bs - <span class="text-brand-gold font-semibold">${p.category}</span></p>
+              </div>
             </div>
-            <button onclick="del('${d.id}')" class='text-red-400 px-3 py-1 text-xs bg-red-500/10 rounded-lg'>Eliminar</button>
-          </div>`;
-        });
-        list.innerHTML = html;
+            <div class="flex items-center gap-1 flex-shrink-0">
+              <button onclick="editProduct('${p.id}')" class="p-2 text-slate-400 hover:text-white"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="deleteProduct('${p.id}')" class="p-2 text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `).join('');
       } catch(e) {
-        list.innerHTML = "<p class='text-xs text-red-400'>Error al cargar de Firebase.</p>";
+        list.innerHTML = "<p class='text-xs text-red-400'>Error al conectar con la base de datos.</p>";
       }
     }
 
-    window.saveProduct = async function(e) {
+    window.handleProductSubmit = async function(e) {
       e.preventDefault();
+      const id = document.getElementById('prod-id').value;
+      const data = {
+        title: document.getElementById('prod-title').value.trim(),
+        price: parseFloat(document.getElementById('prod-price').value),
+        category: document.getElementById('prod-category').value,
+        img: document.getElementById('prod-img').value.trim(),
+        desc: document.getElementById('prod-desc').value.trim()
+      };
+
       try {
-        await addDoc(collection(db, "products"), {
-          title: document.getElementById('p-title').value,
-          price: parseFloat(document.getElementById('p-price').value),
-          category: document.getElementById('p-cat').value,
-          img: document.getElementById('p-img').value,
-          desc: document.getElementById('p-desc').value
-        });
-        document.getElementById('product-form').reset();
-        showMsg("¡Publicado con éxito!");
-        loadProducts();
+        if(id) {
+          await updateDoc(doc(db, "products", id), data);
+          showToast("¡Producto actualizado!");
+        } else {
+          await addDoc(collection(db, "products"), data);
+          showToast("¡Producto publicado con éxito!");
+        }
+        resetForm();
+        loadAdminProducts();
       } catch(err) {
-        showMsg("Error al publicar");
+        showToast("Error al guardar el producto");
       }
     }
 
-    window.del = async function(id) {
-      if(confirm("¿Eliminar?")) {
-        await deleteDoc(doc(db, "products", id));
-        showMsg("Eliminado");
-        loadProducts();
+    window.editProduct = function(id) {
+      const p = products.find(item => item.id === id);
+      if(!p) return;
+      document.getElementById('prod-id').value = p.id;
+      document.getElementById('prod-title').value = p.title;
+      document.getElementById('prod-price').value = p.price;
+      document.getElementById('prod-category').value = p.category;
+      document.getElementById('prod-img').value = p.img;
+      document.getElementById('prod-desc').value = p.desc;
+      document.getElementById('form-title').innerText = "Editar Producto";
+      document.getElementById('btn-save').innerText = "Actualizar Producto";
+      document.getElementById('btn-cancel').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.resetForm = function() {
+      document.getElementById('product-form').reset();
+      document.getElementById('prod-id').value = '';
+      document.getElementById('form-title').innerText = "Publicar Producto";
+      document.getElementById('btn-save').innerText = "Guardar Producto";
+      document.getElementById('btn-cancel').classList.add('hidden');
+    }
+
+    window.deleteProduct = async function(id) {
+      if(confirm("¿Estás seguro de eliminar este producto?")) {
+        try {
+          await deleteDoc(doc(db, "products", id));
+          showToast("Producto eliminado");
+          loadAdminProducts();
+        } catch(e) {
+          showToast("Error al eliminar");
+        }
       }
     }
 
-    loadProducts();
+    loadAdminProducts();
   </script>
 </body>
 </html>
